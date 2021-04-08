@@ -1,0 +1,10 @@
+recursive-exclude .github *
+recursive-exclude tests *
+
+exclude .flake8
+exclude .gitignore
+exclude .pre-commit-config.yaml
+exclude MANIFEST.in
+exclude pytest.ini
+exclude requirements-dev.txt
+exclude tox.ini

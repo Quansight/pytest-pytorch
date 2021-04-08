@@ -1,0 +1,40 @@
+[build-system]
+requires = [
+  "setuptools>=45",
+  "setuptools_scm[toml]>=6.0",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+# See link below for available options
+# https://github.com/pypa/setuptools_scm/#configuration-parameters
+
+write_to = "pytest_pytorch/_version.py"
+version_scheme = "release-branch-semver"
+local_scheme = "node-and-timestamp"
+
+[tool.isort]
+# See link below for available options
+# https://pycqa.github.io/isort/docs/configuration/options/
+
+profile = "black"
+line_length = 88
+
+skip_gitignore = true
+float_to_top = true
+color_output = true
+order_by_type = true
+combine_star = true
+filter_files = true
+
+known_third_party = ["pytest"]
+known_first_party = ["torch", "pytest_pytorch"]
+known_local_folder = ["tests"]
+
+[tool.black]
+# See link below for available options
+# https://github.com/psf/black#configuration-format
+
+line-length = 88
+target-version = ['py36']
