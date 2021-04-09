@@ -8,7 +8,7 @@
 
 ## Why do I need it?
 
-Running `pytest test_foo.py::TestFoo` or `pytest test_foo.py::TestFoo::test_bar` is not possible for tests in the PyTorch test suite. If you are used to this syntax or your IDE relies on it ([PyCharm](https://www.jetbrains.com/help/pycharm/pytest.html#run-pytest-test), [VSCode](https://code.visualstudio.com/docs/python/testing#_run-tests)), you can install `pytest-pytorch` to make it work.
+Some testcases in the PyTorch test suite are automatically generated when a module is loaded in order to parametrize them. Trying to collect them with their names as written, e.g. `pytest test_foo.py::TestFoo` or `pytest test_foo.py::TestFoo::test_bar`, is unfortunately not possible. If you are used to this syntax or your IDE relies on it ([PyCharm](https://www.jetbrains.com/help/pycharm/pytest.html#run-pytest-test), [VSCode](https://code.visualstudio.com/docs/python/testing#_run-tests)), you can install `pytest-pytorch` to make it work.
 
 ## How do I install it?
 
@@ -20,7 +20,7 @@ $ pip install pytest-pytorch
 
 ## Can I have a little more background?
 
-Pytorch uses a homebrew testing framework that is based on the [`unittest`](https://docs.python.org/3/library/unittest.html) framework. It offers the ability to write device-agnostic tests by using the defined testcase as template and instantiating a new one for every available device. Consider the following module `test_foo.py`:
+PyTorch uses its own method for generating tests that is for the most part compatible with [`unittest`](https://docs.python.org/3/library/unittest.html) and pytest. Its custom test generation allows test templates to be written and instantiated for different device types, data types, and operators. Consider the following module `test_foo.py`:
 
 ```python
 from torch.testing._internal.common_utils import TestCase
@@ -52,12 +52,8 @@ From a `pytest` perspective this is similar to decorating `TestFoo` with `@pytes
 
 Since the PyTorch test framework renames testcases and tests, naively running `pytest test_foo.py::TestFoo` or `pytest test_foo.py::TestFoo::test_bar` fails, because it can't find anything matching these names. Of course you can get around it by using the regular expression matching ([`-k` command line flag](https://docs.pytest.org/en/stable/reference.html#command-line-flags)) that `pytest` offers. 
 
-`pytest-pytorch` takes that burden from you by performing this matching so you can keep your familiar workflow and your IDE is happy out of the box.
+`pytest-pytorch` performs this matching so you can keep your familiar workflow and your IDE is happy out of the box.
 
 ## How do I contribute?
 
 First and foremost: Thank you for your interest in development of `pytest-pytorch`'s! We appreciate all contributions be it code or something else. Check out our [contribution guide lines](CONTRIBUTING.md) for details.
-
-## What is plan for the future?
-
-We opted to create a "third-party" at first, to root out all the teething issues. Ultimately, the plan is to get this absorbed into the main PyTorch project when we reach a stable state.
