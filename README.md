@@ -18,6 +18,17 @@ Installing `pytest-pytorch` is as easy as
 $ pip install pytest-pytorch
 ```
 
+## How do I use it?
+
+With `pytest-pytorch` installed you can select test cases and tests as if the instantiation for different devices was performed by [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html#different-options-for-test-ids):
+
+| Use case                            | Command                                              |
+|-------------------------------------|------------------------------------------------------|
+| Run a test case against all devices | `pytest test_foo.py::TestBar`                        |
+| Run a test case against one device  | `pytest test_foo.py::TestBar -k "$DEVICE"`           |
+| Run a test against all devices      | `pytest test_foo.py::TestBar::test_baz`              |
+| Run a test against one device       | `pytest test_foo.py::TestBar::test_baz -k "$DEVICE"` |
+
 ## Can I have a little more background?
 
 PyTorch uses its own method for generating tests that is for the most part compatible with [`unittest`](https://docs.python.org/3/library/unittest.html) and pytest. Its custom test generation allows test templates to be written and instantiated for different device types, data types, and operators. Consider the following module `test_foo.py`:
