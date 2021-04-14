@@ -30,7 +30,9 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Create environment
-        run: tox -e lint --notest
+        run: |
+          tox -e lint --notest
+          pre-commit install-hooks
 
       - name: Run lint
         run: tox -e lint
