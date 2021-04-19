@@ -180,3 +180,34 @@ def test_dtype(testdir, file, cmds, outcomes):
     testdir.copy_example(file)
     result = testdir.runpytest(*cmds)
     result.assert_outcomes(**outcomes)
+
+
+@make_params(
+    "test_nested_names.py",
+    Config(
+        "*testcase-*test-*device",
+        new_cmds=(),
+        legacy_cmds=(),
+        passed=2,
+        skipped=1,
+        failed=1,
+    ),
+    Config(
+        "1testcase1-*test-*device",
+        new_cmds="::TestFoo",
+        legacy_cmds=("-k", "TestFoo and not TestFooBar"),
+        passed=1,
+        failed=1,
+    ),
+    Config(
+        "1testcase2-*test-*device",
+        new_cmds="::TestFooBar",
+        legacy_cmds=("-k", "TestFooBar"),
+        passed=1,
+        skipped=1,
+    ),
+)
+def test_nested_names(testdir, file, cmds, outcomes):
+    testdir.copy_example(file)
+    result = testdir.runpytest(*cmds)
+    result.assert_outcomes(**outcomes)
