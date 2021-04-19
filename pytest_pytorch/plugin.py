@@ -14,8 +14,7 @@ except ImportError:
     TORCH_AVAILABLE = False
 
     warnings.warn(
-        "The plugin 'pytest-pytorch' was loaded, "
-        "but the package 'torch' could not be imported."
+        "Disabling the plugin 'pytest-pytorch', because 'torch' could not be imported."
     )
 
     def get_device_type_test_bases():
