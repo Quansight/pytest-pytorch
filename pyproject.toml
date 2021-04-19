@@ -28,7 +28,7 @@ order_by_type = true
 combine_star = true
 filter_files = true
 
-known_third_party = ["pytest"]
+known_third_party = ["pytest", "_pytest"]
 known_first_party = ["torch", "pytest_pytorch"]
 known_local_folder = ["tests"]
 

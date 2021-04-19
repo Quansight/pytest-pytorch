@@ -1,11 +1,28 @@
 import re
 import unittest.mock
+import warnings
 from typing import Pattern
 
 from _pytest.unittest import TestCaseFunction, UnitTestCase
 
-from torch.testing._internal.common_device_type import get_device_type_test_bases
-from torch.testing._internal.common_utils import TestCase as PyTorchTestCaseTemplate
+try:
+    from torch.testing._internal.common_device_type import get_device_type_test_bases
+    from torch.testing._internal.common_utils import TestCase as PyTorchTestCaseTemplate
+
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+
+    warnings.warn(
+        "The plugin 'pytest-pytorch' was loaded, "
+        "but the package 'torch' could not be imported."
+    )
+
+    def get_device_type_test_bases():
+        return []
+
+    class PyTorchTestCaseTemplate:
+        pass
 
 
 class PytestPyTorchInternalError(Exception):
@@ -93,6 +110,9 @@ class PyTorchTestCase(UnitTestCase):
 
 
 def pytest_pycollect_makeitem(collector, name, obj):
+    if not TORCH_AVAILABLE:
+        return None
+
     try:
         if (
             not issubclass(obj, PyTorchTestCaseTemplate)
