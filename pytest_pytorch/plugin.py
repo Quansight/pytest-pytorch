@@ -26,7 +26,7 @@ class PyTorchTestCase(UnitTestCase):
 
     def collect(self):
         # Yes, this is a bad practice. Unfortunately, there is no other option to
-        # inject our custom 'TestCaseFunction' without duplicating everyting in
+        # inject our custom 'TestCaseFunction' without duplicating everything in
         # 'UnitTestCase.collect()'
         with unittest.mock.patch(
             "_pytest.unittest.TestCaseFunction", new=PyTorchTestCaseFunction
