@@ -113,7 +113,6 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds="::TestSpam",
         legacy_cmds=("-k", "TestSpam"),
         passed=1,
-        # skipped=2,
         failed=1,
     ),
     Config(
