@@ -97,7 +97,7 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds=(),
         legacy_cmds=(),
         passed=3,
-        skipped=7,
+        skipped=1,
         failed=2,
     ),
     Config(
@@ -105,15 +105,15 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds="::TestFoo",
         legacy_cmds=("-k", "TestFoo"),
         passed=2,
-        skipped=5,
+        skipped=1,
         failed=1,
     ),
     Config(
-        "1testcase2-*test-*device",
+        "1testcase2-*test-*dtype",
         new_cmds="::TestSpam",
         legacy_cmds=("-k", "TestSpam"),
         passed=1,
-        skipped=2,
+        # skipped=2,
         failed=1,
     ),
     Config(
@@ -121,7 +121,6 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds=("-k", "float16"),
         legacy_cmds=("-k", "float16"),
         passed=1,
-        skipped=3,
         failed=2,
     ),
     Config(
@@ -129,7 +128,7 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds=("-k", "int32"),
         legacy_cmds=("-k", "int32"),
         passed=1,
-        skipped=3,
+        skipped=1,
     ),
     Config(
         "1testcase-*test-1dtype1",
@@ -137,21 +136,19 @@ def test_device(testdir, file, cmds, outcomes):
         legacy_cmds=("-k", "TestFoo and float16"),
         passed=1,
         failed=1,
-        skipped=2,
     ),
     Config(
         "1testcase-*test-1dtype2",
         new_cmds=("::TestFoo", "-k", "int32"),
         legacy_cmds=("-k", "TestFoo and int32"),
         passed=1,
-        skipped=3,
+        skipped=1,
     ),
     Config(
         "1testcase-1test1-*dtype",
         new_cmds="::TestFoo::test_bar",
         legacy_cmds=("-k", "TestFoo and test_bar"),
         passed=1,
-        skipped=2,
         failed=1,
     ),
     Config(
@@ -159,13 +156,12 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds="::TestFoo::test_baz",
         legacy_cmds=("-k", "TestFoo and test_baz"),
         passed=1,
-        skipped=3,
+        skipped=1,
     ),
     Config(
         "1testcase-1test-1dtype1",
         new_cmds=("::TestFoo::test_bar", "-k", "float16"),
         legacy_cmds=("-k", "TestFoo and test_bar and float16"),
-        skipped=1,
         failed=1,
     ),
     Config(
@@ -173,7 +169,6 @@ def test_device(testdir, file, cmds, outcomes):
         new_cmds=("::TestFoo::test_bar", "-k", "int32"),
         legacy_cmds=("-k", "TestFoo and test_bar and int32"),
         passed=1,
-        skipped=1,
     ),
 )
 def test_dtype(testdir, file, cmds, outcomes):
