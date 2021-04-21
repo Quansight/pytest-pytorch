@@ -12,10 +12,16 @@ Some testcases in the PyTorch test suite are automatically generated when a modu
 
 ## How do I install it?
 
-Installing `pytest-pytorch` is as easy as 
+You can install `pytest-pytorch` with `pip`
 
-```
+```shell
 $ pip install pytest-pytorch
+```
+
+or with `conda`:
+
+```shell
+$ conda install -c conda-forge pytest-pytorch
 ```
 
 ## How do I use it?
