@@ -205,3 +205,30 @@ def test_nested_names(testdir, file, cmds, outcomes):
     testdir.copy_example(file)
     result = testdir.runpytest(*cmds)
     result.assert_outcomes(**outcomes)
+
+
+@make_params(
+    "test_op_infos.py",
+    Config(
+        "*testcase-*test-*op-*device-*dtype",
+        new_cmds=(),
+        legacy_cmds=(),
+        passed=8,
+    ),
+    Config(
+        "1testcase-*test-*op-*device-*dtype",
+        new_cmds="::TestFoo",
+        legacy_cmds=("-k", "TestFoo"),
+        passed=8,
+    ),
+    Config(
+        "1testcase-1test-*op-*device-*dtype",
+        new_cmds="::TestFoo::test_bar",
+        legacy_cmds=("-k", "TestFoo and test_bar"),
+        passed=8,
+    ),
+)
+def test_op_infos(testdir, file, cmds, outcomes):
+    testdir.copy_example(file)
+    result = testdir.runpytest(*cmds)
+    result.assert_outcomes(**outcomes)
