@@ -51,7 +51,7 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Create environment
-        run: tox -e tests --notest
+        run: tox -vv -e tests --notest
 
       - name: Run tests
         run: tox -e tests
