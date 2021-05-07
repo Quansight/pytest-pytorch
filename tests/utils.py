@@ -14,11 +14,13 @@ class Config:
         *,
         file: Optional[str] = None,
         new_cmds: Union[str, Sequence[str]] = (),
-        legacy_cmds: Union[str, Sequence[str]] = (),
+        legacy_cmds: Optional[Union[str, Sequence[str]]] = None,
         selection: Collection[str],
     ):
         self._file = file
         self._new_cmds = new_cmds
+        if legacy_cmds is None:
+            legacy_cmds = new_cmds
         self._legacy_cmds = legacy_cmds
         self._selection = selection
 
@@ -46,20 +48,24 @@ class Config:
         new_cmds = self._parse_cmds(self._new_cmds, file)
         legacy_cmds = self._parse_cmds(self._legacy_cmds, file)
         selection = self._parse_selection(self._selection, file)
-        return (
-            pytest.param(
-                file,
-                new_cmds,
-                selection,
-                id=self._cmds_to_id(new_cmds),
-            ),
-            pytest.param(
-                file,
-                legacy_cmds,
-                selection,
-                id=self._cmds_to_id(legacy_cmds),
-            ),
+
+        new_params = pytest.param(
+            file,
+            new_cmds,
+            selection,
+            id=self._cmds_to_id(new_cmds),
         )
+        if new_cmds == legacy_cmds:
+            return (new_params,)
+
+        legacy_cmds = pytest.param(
+            file,
+            legacy_cmds,
+            selection,
+            id=self._cmds_to_id(legacy_cmds),
+        )
+
+        return (new_params, legacy_cmds)
 
 
 def make_params(*configs: Config, file: Optional[str] = None) -> List[ParameterSet]:
