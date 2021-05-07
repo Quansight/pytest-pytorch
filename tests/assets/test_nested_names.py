@@ -1,24 +1,19 @@
-from torch.testing._internal.common_device_type import (
-    instantiate_device_type_tests,
-    onlyOn,
-)
 from torch.testing._internal.common_utils import TestCase
 
 
 class TestFoo(TestCase):
-    # fails for meta, passes for cpu
-    def test_baz(self, device):
-        assert device != "meta"
-
-
-instantiate_device_type_tests(TestFoo, globals())
+    def test_baz(self):
+        pass
 
 
 class TestFooBar(TestCase):
-    # passes for meta, skips for cpu
-    @onlyOn("meta")
-    def test_baz(self, device):
-        assert True
+    def test_baz(self):
+        pass
 
 
-instantiate_device_type_tests(TestFooBar, globals())
+class TestSpam(TestCase):
+    def test_ham(self):
+        pass
+
+    def test_ham_eggs(self):
+        pass

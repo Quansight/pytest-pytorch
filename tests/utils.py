@@ -1,67 +1,70 @@
-from typing import Dict, Sequence, Tuple, Union
+from typing import Collection, List, Optional, Sequence, Set, Tuple, Union
 
 import pytest
 from _pytest.mark.structures import MarkDecorator, ParameterSet
 
-__all__ = ["Config", "make_params"]
+__all__ = ["Config", "make_params", "make_parametrization"]
 
 
 class Config:
+    PARAM_NAMES = ("file", "cmds", "selection")
+
     def __init__(
         self,
-        id: str,
         *,
-        new_cmds: Union[str, Sequence[str]],
-        legacy_cmds: Union[str, Sequence[str]],
-        passed: int = 0,
-        skipped: int = 0,
-        failed: int = 0,
-        errors: int = 0,
-        xpassed: int = 0,
-        xfailed: int = 0,
+        file: Optional[str] = None,
+        new_cmds: Union[str, Sequence[str]] = (),
+        legacy_cmds: Union[str, Sequence[str]] = (),
+        selection: Collection[str],
     ):
-        self._id = id
-        self._new_cmds = self._parse_cmds(new_cmds)
-        self._legacy_cmds = self._parse_cmds(legacy_cmds)
-        self._outcomes: Dict[str, int] = dict(
-            passed=passed,
-            skipped=skipped,
-            failed=failed,
-            errors=errors,
-            xpassed=xpassed,
-            xfailed=xfailed,
-        )
+        self._file = file
+        self._new_cmds = new_cmds
+        self._legacy_cmds = legacy_cmds
+        self._selection = selection
 
     @staticmethod
-    def _parse_cmds(cmds: Union[str, Sequence[str]]) -> Tuple[str, ...]:
-        return (cmds,) if isinstance(cmds, str) else tuple(cmds)
-
-    @staticmethod
-    def _amend_cmds(cmds: Tuple[str, ...], file: str) -> Tuple[str, ...]:
-        if not cmds or not cmds[0].startswith(":"):
+    def _parse_cmds(cmds: Union[str, Sequence[str]], file: str) -> Tuple[str, ...]:
+        cmds = (cmds,) if isinstance(cmds, str) else tuple(cmds)
+        if not cmds or not cmds[0].startswith("::"):
             return (file, *cmds)
         else:
             return (file + cmds[0], *cmds[1:])
 
-    def make_params(self, file: str) -> Tuple[ParameterSet, ...]:
+    @staticmethod
+    def _parse_selection(selection: Collection[str], file: str) -> Set[str]:
+        return {file + item if item.startswith("::") else item for item in selection}
+
+    @staticmethod
+    def _cmds_to_id(cmds: Tuple[str, ...]) -> str:
+        return " ".join(cmds)
+
+    def make_params(self, file: Optional[str] = None) -> Tuple[ParameterSet, ...]:
+        file = self._file or file
+        if not file:
+            raise pytest.UsageError
+
+        new_cmds = self._parse_cmds(self._new_cmds, file)
+        legacy_cmds = self._parse_cmds(self._legacy_cmds, file)
+        selection = self._parse_selection(self._selection, file)
         return (
             pytest.param(
                 file,
-                self._amend_cmds(self._new_cmds, file),
-                self._outcomes,
-                id=f"{self._id}-new",
+                new_cmds,
+                selection,
+                id=self._cmds_to_id(new_cmds),
             ),
             pytest.param(
                 file,
-                self._amend_cmds(self._legacy_cmds, file),
-                self._outcomes,
-                id=f"{self._id}-legacy",
+                legacy_cmds,
+                selection,
+                id=self._cmds_to_id(legacy_cmds),
             ),
         )
 
 
-def make_params(file: str, *configs: Config) -> MarkDecorator:
-    return pytest.mark.parametrize(
-        ("file", "cmds", "outcomes"),
-        [param for config in configs for param in config.make_params(file)],
-    )
+def make_params(*configs: Config, file: Optional[str] = None) -> List[ParameterSet]:
+    return [param for config in configs for param in config.make_params(file)]
+
+
+def make_parametrization(*configs, file: Optional[str] = None) -> MarkDecorator:
+    return pytest.mark.parametrize(Config.PARAM_NAMES, make_params(*configs, file=file))
