@@ -76,6 +76,83 @@ def test_standard_collection(collect_tests, file, cmds, selection):
 
 @make_parametrization(
     Config(
+        new_cmds=("-k", "cpu"),
+        legacy_cmds=("-k", "cpu"),
+        selection=(
+            "::TestFooCPU::test_bar_cpu",
+            "::TestFooCPU::test_baz_cpu",
+            "::TestSpamCPU::test_ham_cpu",
+            "::TestSpamCPU::test_eggs_cpu",
+            "::TestQuxCPU::test_quux_cpu",
+        ),
+    ),
+    Config(
+        new_cmds=("-k", "meta"),
+        legacy_cmds=("-k", "meta"),
+        selection=(
+            "::TestFooMETA::test_bar_meta",
+            "::TestFooMETA::test_baz_meta",
+            "::TestSpamMETA::test_ham_meta",
+            "::TestSpamMETA::test_eggs_meta",
+        ),
+    ),
+    file="test_device.py",
+)
+def test_devices(collect_tests, file, cmds, selection):
+    collection = collect_tests(file, cmds)
+    assert collection == selection
+
+
+@make_parametrization(
+    Config(
+        new_cmds=("-k", "float16"),
+        legacy_cmds=("-k", "float16"),
+        selection=(
+            "::TestFooCPU::test_bar_cpu_float16",
+            "::TestFooCPU::test_bar_cpu_float16",
+        ),
+    ),
+    Config(
+        new_cmds=("-k", "int32"),
+        legacy_cmds=("-k", "int32"),
+        selection=(
+            "::TestFooCPU::test_bar_cpu_int32",
+            "::TestFooCPU::test_bar_cpu_int32",
+        ),
+    ),
+    file="test_dtype.py",
+)
+def test_dtypes(collect_tests, file, cmds, selection):
+    collection = collect_tests(file, cmds)
+    assert collection == selection
+
+
+@make_parametrization(
+    Config(
+        new_cmds=("-k", "add"),
+        legacy_cmds=("-k", "add"),
+        selection=(
+            "::TestFooCPU::test_bar_add_cpu_float32",
+            "::TestFooCPU::test_bar_add_with_alpha_cpu_float32",
+        ),
+    ),
+    Config(
+        new_cmds=("-k", "sub"),
+        legacy_cmds=("-k", "sub"),
+        selection=(
+            "::TestFooCPU::test_bar_sub_cpu_float32",
+            "::TestFooCPU::test_bar_sub_with_alpha_cpu_float32",
+        ),
+    ),
+    file="test_op_infos.py",
+)
+def test_op_infos(collect_tests, file, cmds, selection):
+    collection = collect_tests(file, cmds)
+    assert collection == selection
+
+
+@make_parametrization(
+    Config(
         selection=(
             "::TestFoo::test_baz",
             "::TestFooBar::test_baz",

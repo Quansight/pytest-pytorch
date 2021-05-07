@@ -30,7 +30,9 @@ class TestFoo(TestCase):
     @ops(
         [
             OpInfo("add", dtypes=dtypes),
+            OpInfo("add", variant_test_name="with_alpha", dtypes=dtypes),
             OpInfo("sub", dtypes=dtypes),
+            OpInfo("sub", variant_test_name="with_alpha", dtypes=dtypes),
         ]
     )
     def test_bar(self, device, dtype, op):
