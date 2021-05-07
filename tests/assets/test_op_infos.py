@@ -1,6 +1,6 @@
 import torch
+from torch.testing._core import _dispatch_dtypes
 from torch.testing._internal.common_device_type import (
-    dtypes,
     instantiate_device_type_tests,
     ops,
 )
@@ -23,10 +23,16 @@ except ModuleNotFoundError:
     pass
 # ======================================================================================
 
+dtypes = _dispatch_dtypes((torch.float32,))
+
 
 class TestFoo(TestCase):
-    @dtypes(torch.float16, torch.int32)
-    @ops([OpInfo("add"), OpInfo("sub")])
+    @ops(
+        [
+            OpInfo("add", dtypes=dtypes),
+            OpInfo("sub", dtypes=dtypes),
+        ]
+    )
     def test_bar(self, device, dtype, op):
         pass
 
