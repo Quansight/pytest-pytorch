@@ -8,6 +8,10 @@ def collect_tests(testdir):
     def collect_tests_(file: str, cmds: str):
         testdir.copy_example(file)
         result = testdir.runpytest("--quiet", "--collect-only", *cmds)
+
+        if result.outlines[-1].startswith("no tests collected"):
+            return set()
+
         assert result.ret == pytest.ExitCode.OK
 
         collection = set()
