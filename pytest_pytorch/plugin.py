@@ -13,7 +13,7 @@ except ImportError:
     TORCH_AVAILABLE = False
 
     warnings.warn(
-        "Disabling the plugin 'pytest-pytorch', because 'torch' could not be imported."
+        "Disabling the `pytest-pytorch` plugin, because 'torch' could not be imported."
     )
 
 
@@ -87,8 +87,20 @@ class TemplatedTestCase(UnitTestCase):
             yield from super().collect()
 
 
+def pytest_addoption(parser, pluginmanager):
+    parser.addoption(
+        "--disable-pytest-pytorch",
+        action="store_true",
+        help="Disable the `pytest-pytorch` plugin",
+    )
+    return None
+
+
 def pytest_pycollect_makeitem(collector, name, obj):
     if not TORCH_AVAILABLE:
+        return None
+
+    if collector.config.getoption("disable_pytest_pytorch"):
         return None
 
     try:

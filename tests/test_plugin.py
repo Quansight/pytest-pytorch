@@ -179,3 +179,45 @@ def test_op_infos(collect_tests, file, cmds, selection):
 def test_nested_names(collect_tests, file, cmds, selection):
     collection = collect_tests(file, cmds)
     assert collection == selection
+
+
+@make_parametrization(
+    Config(
+        selection=(
+            "::TestFooCPU::test_bar_cpu",
+            "::TestSpam::test_ham",
+        ),
+    ),
+    Config(
+        new_cmds="::TestFoo",
+        selection=(),
+    ),
+    Config(
+        new_cmds="::TestFoo::test_bar",
+        selection=(),
+    ),
+    Config(
+        new_cmds="::TestFooCPU",
+        legacy_cmds=("-k", "TestFoo"),
+        selection=("::TestFooCPU::test_bar_cpu",),
+    ),
+    Config(
+        new_cmds="::TestFooCPU::test_bar_cpu",
+        legacy_cmds=("-k", "TestFoo and test_bar"),
+        selection=("::TestFooCPU::test_bar_cpu",),
+    ),
+    Config(
+        new_cmds="::TestSpam",
+        legacy_cmds=("-k", "TestSpam"),
+        selection=("::TestSpam::test_ham",),
+    ),
+    Config(
+        new_cmds="::TestSpam::test_ham",
+        legacy_cmds=("-k", "TestSpam and test_ham"),
+        selection=("::TestSpam::test_ham",),
+    ),
+    file="test_disabled.py",
+)
+def test_disabled(collect_tests, file, cmds, selection):
+    collection = collect_tests(file, ("--disable-pytest-pytorch", *cmds))
+    assert collection == selection
