@@ -4,11 +4,13 @@
 
 ## What is it?
 
-`pytest-pytorch` is a lightweight [`pytest`](https://docs.pytest.org/en/stable/)-plugin that enhances the developer experience when working with the PyTorch test suite if you come from a `pytest` background.
+`pytest-pytorch` is a lightweight [`pytest`]-plugin that enhances the developer experience when working with the [PyTorch] test suite if you come from a [`pytest`] background.
 
 ## Why do I need it?
 
-Some testcases in the PyTorch test suite are automatically generated when a module is loaded in order to parametrize them. Trying to collect them with their names as written, e.g. `pytest test_foo.py::TestFoo` or `pytest test_foo.py::TestFoo::test_bar`, is unfortunately not possible. If you are used to this syntax or your IDE relies on it ([PyCharm](https://www.jetbrains.com/help/pycharm/pytest.html#run-pytest-test), [VSCode](https://code.visualstudio.com/docs/python/testing#_run-tests)), you can install `pytest-pytorch` to make it work.
+Some testcases in the PyTorch test suite are only used as templates and will be instantiated at runtime. Unfortunately, [PyTorch]'s naming scheme for parametrizations differs from [`pytest`]'s. As a consequence, these tests cannot be selected by their names as written and one has to remember [PyTorch]'s naming scheme. This can be especially disrupting to your workflow if your IDE ([PyCharm](https://www.jetbrains.com/help/pycharm/pytest.html#run-pytest-test), [VSCode](https://code.visualstudio.com/docs/python/testing#_run-tests)) relies on [`pytest`]'s default selection syntax.
+
+If this has ever been a source of frustration for you, worry no longer. `pytest-pytorch` was made for you.
 
 ## How do I install it?
 
@@ -26,51 +28,27 @@ $ conda install -c conda-forge pytest-pytorch
 
 ## How do I use it?
 
-With `pytest-pytorch` installed you can select test cases and tests as if the instantiation for different devices was performed by [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html#different-options-for-test-ids):
+With `pytest-pytorch` installed you can select test cases and tests by their names as written:
 
-| Use case                            | Command                                              |
-|-------------------------------------|------------------------------------------------------|
-| Run a test case against all devices | `pytest test_foo.py::TestBar`                        |
-| Run a test case against one device  | `pytest test_foo.py::TestBar -k "$DEVICE"`           |
-| Run a test against all devices      | `pytest test_foo.py::TestBar::test_baz`              |
-| Run a test against one device       | `pytest test_foo.py::TestBar::test_baz -k "$DEVICE"` |
+| Use case                            | Command                                 |
+|-------------------------------------|-----------------------------------------|
+| Run a test case against all devices | `pytest test_foo.py::TestBar`           |
+| Run a test against all devices      | `pytest test_foo.py::TestBar::test_baz` |
+
+Similar to a parametrization by [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html#different-options-for-test-ids) you can use the [`-k` flag](https://docs.pytest.org/en/stable/reference.html#command-line-flags) to select a specific set of parameters:
+
+| Use case                           | Command                                              |
+|------------------------------------|------------------------------------------------------|
+| Run a test case against one device | `pytest test_foo.py::TestBar -k "$DEVICE"`           |
+| Run a test against one device      | `pytest test_foo.py::TestBar::test_baz -k "$DEVICE"` |
 
 ## Can I have a little more background?
 
-PyTorch uses its own method for generating tests that is for the most part compatible with [`unittest`](https://docs.python.org/3/library/unittest.html) and pytest. Its custom test generation allows test templates to be written and instantiated for different device types, data types, and operators. Consider the following module `test_foo.py`:
-
-```python
-from torch.testing._internal.common_utils import TestCase
-from torch.testing._internal.common_device_type import instantiate_device_type_tests
-
-class TestFoo(TestCase):
-    def test_bar(self, device):
-        pass
-    
-    def test_baz(self, device):
-        pass
-
-instantiate_device_type_tests(TestFoo, globals())
-```
-
-Assuming we `"cpu"` and `"cuda"` are available as devices, we can collect four tests:
-
-1. `test_foo.py::TestFooCPU::test_bar_cpu`,
-2. `test_foo.py::TestFooCPU::test_baz_cpu`,
-3. `test_foo.py::TestFooCUDA::test_bar_cuda`, and
-4. `test_foo.py::TestFooCUDA::test_baz_cuda`.
-
-From a `pytest` perspective this is similar to decorating `TestFoo` with `@pytest.mark.parametrize("device", ("cpu", "cuda")))` which would result in
-
-1. `test_foo.py::TestFoo:test_bar[cpu]`,
-2. `test_foo.py::TestFoo:test_bar[cuda]`,
-3. `test_foo.py::TestFoo:test_baz[cpu]`, and
-4. `test_foo.py::TestFoo:test_baz[cuda]`.
-
-Since the PyTorch test framework renames testcases and tests, naively running `pytest test_foo.py::TestFoo` or `pytest test_foo.py::TestFoo::test_bar` fails, because it can't find anything matching these names. Of course you can get around it by using the regular expression matching ([`-k` command line flag](https://docs.pytest.org/en/stable/reference.html#command-line-flags)) that `pytest` offers. 
-
-`pytest-pytorch` performs this matching so you can keep your familiar workflow and your IDE is happy out of the box.
+Sure, we have written a [blog post about `pytest-pytorch`](https://deploy-preview-211--quansight-labs.netlify.app/blog/2021/06/pytest-pytorch/) that goes into details.
 
 ## How do I contribute?
 
 First and foremost: Thank you for your interest in development of `pytest-pytorch`'s! We appreciate all contributions be it code or something else. Check out our [contribution guide lines](CONTRIBUTING.md) for details.
+
+[PyTorch]: https://pytorch.org
+[`pytest`]: https://docs.pytest.org/en/stable/
