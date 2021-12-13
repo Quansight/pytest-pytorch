@@ -44,7 +44,7 @@ Similar to a parametrization by [`@pytest.mark.parametrize`](https://docs.pytest
 
 ## Can I have a little more background?
 
-Sure, we have written a [blog post about `pytest-pytorch`](https://deploy-preview-211--quansight-labs.netlify.app/blog/2021/06/pytest-pytorch/) that goes into details.
+Sure, we have written a [blog post about `pytest-pytorch`](https://labs.quansight.org/blog/2021/06/pytest-pytorch/) that goes into details.
 
 ## How do I contribute?
 
